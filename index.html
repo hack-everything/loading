@@ -6,110 +6,124 @@
     <meta http-equiv="refresh" content="2.5; URL=https://def-not-hacking-the.net" />
 </head>
 <body>
-<canvas id = 'canv'></canvas>
 <style>
-    body{
-  width:100%; 
-  margin:0;
-  overflow:hidden;
+    @import url(https://fonts.googleapis.com/css?family=Julius+Sans+One);
+html{width: 100%;
+  height: 100%;
 }
+body{margin: 0px;
+  padding: 0px;
+  background-color: #111;
+}
+
+.eye{
+  width: 20px; height: 8px;
+  background-color: rgba(240,220,220,1);
+  border-radius:0px 0px 20px 20px;
+  position: relative;
+  left: 10px; top: 40px;
+  box-shadow:  40px 0px 0px 0px rgba(240,220,220,1);              
+}
+
+.head{
+  -webkit-backface-visibility: hidden;
+  position: relative;
+  margin: -250px auto;
+  width: 80px; height: 80px;
+  background-color: #111;
+  border-radius:50px;
+  box-shadow: inset -4px 2px 0px 0px rgba(240,220,220,1);
+  -webkit-animation:headAnim 1.5s infinite alternate;
+  -webkit-animation-timing-function:ease-out;
+}
+
+.body{ 
+  position: relative;
+  margin: 90px auto;
+  width: 140px; height: 120px;
+  background-color: #111;
+  border-radius: 50px/25px ;
+  box-shadow: inset -5px 2px 0px 0px rgba(240,220,220,1);
+  -webkit-animation:bodyAnim 1.5s infinite alternate;
+  -webkit-animation-timing-function:ease-out;  
+}
+
+  @-webkit-keyframes headAnim{
+         0%{ top:0px; }
+         50%{ top:10px; }
+         100% { top:0px;} 
+  }
+
+  @-webkit-keyframes bodyAnim{
+         0%{ top:-5px; }
+         50%{ top:10px; }
+         100% { top:-5px;} 
+  }
+
+.circ{
+  -webkit-backface-visibility: hidden;
+  margin: 60px auto;
+  width: 180px; height: 180px;
+  background-color: #111;
+  border-radius: 0px 0px 50px 50px;
+  position: relative;
+  z-index: -1;  
+  left: 0%; top: 20%;
+  overflow: hidden;
+}
+
+.hands{
+  -webkit-backface-visibility: hidden;
+  margin-top: 140px;
+  width: 120px;height: 120px;
+  position: absolute;
+  background-color: #111;
+  border-radius:20px;
+  box-shadow:-1px -4px 0px 0px rgba(240,220,220,1);
+  -webkit-transform:rotate(45deg);
+  top:75%;left: 16%;
+  z-index: 1;
+  -webkit-animation:bodyAnim 1.5s infinite alternate;
+  -webkit-animation-timing-function:ease-out;
+}
+
+.load{  
+  position: absolute;
+  width: 7ch; height: 32px;
+  text-align: left;
+  line-height: 32px;
+  margin: -10px auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Julius Sans One', sans-serif;
+  font-size:28px;
+  font-weight:400;
+  color:rgba(240,220,220,1);
+  left: 2%; top: 5%;
+  -webkit-animation:fontAnim 3.75s infinite;
+  -webkit-animation-timing-function:ease-out;
+  word-wrap: break-word;
+  display:block;
+  overflow: hidden;
+}
+
+  @-webkit-keyframes fontAnim{
+        0%{ width:7ch; }
+       16%{ width:8ch; }
+       32%{ width:9ch; }
+       48%{ width:10ch; }
+       64%{ width:11ch; }
+       80%{ width:12ch; }
+     100% { width:13ch;} 
+  }
 </style>
-<script>
-    var c = document.getElementById("canv");
-var $ = c.getContext("2d");
-var w = c.width = window.innerWidth;
-var h = c.height = window.innerHeight;
-var _w = w / 2;
-var _h = h / 2;
+<div class="circ">
+  <div class="load">Loading . . . </div>
+  <div class="hands"></div>
+  <div class="body"></div>
+  <div class="head">
+    <div class="eye"></div>
+  </div>
+</div>
 
-var dp = -0.15;
-var t = 0;
-var u = 0;
-
-var pt = function() {
-  this.set.apply(this, arguments);
-};
-
-pt.prototype = {
-  set: function(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-};
-
-function calc(ang, d) {
-  var p1 = w / 10;
-  var p2 = h / 2;
-  var b = Math.sin(ang + t) + Math.cos(ang + t);
-
-  return new pt(
-    _w + (p2 * Math.cos(ang) + p1 * Math.sin(d + 3 * t)) / d + Math.cos(ang) * b,
-    _h + (p2 * Math.sin(ang)) / d + Math.sin(ang) * b);
-}
-
-function tunnel(ang, deltaA, d, deltaB) {
-  var pts = [
-    calc(ang, d),
-    calc(ang + deltaA, d),
-    calc(ang + deltaA, d + deltaB),
-    calc(ang, d + deltaB)
-  ];
-  var i = 1;
-  $.beginPath();
-  $.moveTo(pts[0].x, pts[0].y);
-  while (true) {
-    $.lineTo(pts[i].x, pts[i].y);
-    if (++i >= pts.length) break;
-  }
-  $.closePath();
-  $.fill();
-}
-
-function draw() {
-  t += 1 / 50;
-  $.fillStyle = 'hsla(0,0%,0%,1)';
-  $.fillRect(0, 0, w, h);
-  var num = 5;
-  var ang = 0;
-  var deltaA = Math.PI * 2 / num;
-  var d = dp + 10;
-  var deltaB = 0.15;
-  var dark;
-  var lum;
-
-  var i;
-
-  while (true) {
-    i = 0;
-    while (true) {
-      dark = 1 / (Math.max((d + 0.5) - 4, 1));
-      if (d <= 2) {
-        dark = Math.max(-1, d / 2 * d / 2);
-      }
-      lum = (125 * (dark * Math.abs(Math.sin(i / num * (Math.PI * 2) + t))));
-      lum *= (0.45 + (0.55 * Math.cos((i / num + 0.55) * Math.PI * 3.5)));
-      $.fillStyle = 'hsla(' + u + ', 95%,' + lum + '%,1)';
-      tunnel(ang, deltaA, d, deltaB);
-      ang += deltaA;
-      if (++i >= num) break;
-    }
-    if ((d -= deltaB) <= dp) break;
-  }
-  if ((dp -= 0.05) <= deltaB) dp += deltaB;
-  u -= .5;
-}
-
-window.addEventListener('resize',function(){
-  c.width = w = window.innerWidth;
-  c.height = h = window.innerHeight;
-}, false);
-
-run();
-
-function run() {
-  window.requestAnimationFrame(run);
-  draw();
-}
-</script>
 </body>
 </html>
